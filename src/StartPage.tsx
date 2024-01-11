@@ -16,11 +16,16 @@ import {
 import { CustomFormData } from './App'; // Import the CustomFormData type
 
 type StartPageProps = {
+  onEdit: (index: number) => void; // Add a new prop for handling edit
   onNext: () => void;
   formDataList: CustomFormData[];
 };
 
-const StartPage: React.FC<StartPageProps> = ({ onNext, formDataList }) => {
+const StartPage: React.FC<StartPageProps> = ({ onEdit, onNext, formDataList }) => {
+  const handleEdit = (index: number) => {
+    onEdit(index); // Pass the index to the parent component
+  };
+
   const handleNext = () => {
     onNext();
   };
@@ -45,10 +50,10 @@ const StartPage: React.FC<StartPageProps> = ({ onNext, formDataList }) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
-              <TableCell>Email</TableCell>
-              {/* Add other columns as needed */}
+              <TableCell>street</TableCell>
+              <TableCell>city</TableCell>
+              <TableCell>state</TableCell>
+              <TableCell>Action</TableCell> {/* Add a new column for Action */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -57,6 +62,11 @@ const StartPage: React.FC<StartPageProps> = ({ onNext, formDataList }) => {
                 <TableCell>{formData.street}</TableCell>
                 <TableCell>{formData.city}</TableCell>
                 <TableCell>{formData.state}</TableCell>
+                <TableCell>
+                  <Button variant="outlined" color="primary" onClick={() => handleEdit(index)}>
+                    Edit
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

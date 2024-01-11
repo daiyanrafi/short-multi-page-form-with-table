@@ -1,6 +1,6 @@
 // App.tsx
 import React, { FormEvent, useState } from 'react';
-import { Container, Paper, Typography, Grid, Button } from '@mui/material';
+import { Container, Paper, Typography, Button } from '@mui/material';
 import { AddressForm } from './AddressForm';
 import { AccountForm } from './AccountForm';
 import StartPage from './StartPage';
@@ -33,6 +33,8 @@ function App() {
   const [data, setData] = useState<CustomFormData>(INITIAL_DATA);
   const [formDataList, setFormDataList] = useState<CustomFormData[]>([]);
   const [showStartPage, setShowStartPage] = useState(true);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   function updateFields(fields: Partial<CustomFormData>) {
     setData((prev) => ({ ...prev, ...fields }));
@@ -43,41 +45,48 @@ function App() {
     <AccountForm {...data} updateFields={updateFields} />,
   ];
 
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-
-  function next() {
-    setCurrentStepIndex((i) => (i >= steps.length - 1 ? i : i + 1));
+  function next(index?: number) {
+    setCurrentStepIndex(0); // Reset to the first step
+    setEditingIndex(index !== undefined ? index : null);
+    setShowStartPage(false);
   }
+
+  const handleEdit = (index: number) => {
+    setData(formDataList[index]); // Load existing data into the form
+    next(index); // Move to the multipage form for editing
+  };
 
   function back() {
     setCurrentStepIndex((i) => (i <= 0 ? i : i - 1));
   }
-
-  const step = steps[currentStepIndex];
 
   const isFirstStep = currentStepIndex === 0;
   const isLastStep = currentStepIndex === steps.length - 1;
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!isLastStep) return next();
-  
-    setFormDataList((prev) => [
-      ...prev,
-      { ...data }, // Clone the current form data
-    ]);
-  
+
+    if (editingIndex !== null) {
+      // If editing, update the existing data
+      setFormDataList((prev) =>
+        prev.map((item, index) => (index === editingIndex ? { ...data } : item))
+      );
+    } else {
+      // If not editing, add new data
+      setFormDataList((prev) => [...prev, { ...data }]);
+    }
+
     setData(INITIAL_DATA);
     setShowStartPage(true); // Reset to show StartPage again
     setCurrentStepIndex(0); // Reset to the first step
-    alert('Successful Account Creation');
+    setEditingIndex(null); // Reset editing index
+    alert(editingIndex !== null ? 'Successful Update' : 'Successful Account Creation');
   };
-  
 
   return (
     <Container component="main" maxWidth="sm">
       {showStartPage ? (
-        <StartPage onNext={() => setShowStartPage(false)} formDataList={formDataList} />
+        <StartPage onEdit={handleEdit} onNext={() => setShowStartPage(false)} formDataList={formDataList} />
       ) : (
         <Paper
           style={{
@@ -91,14 +100,16 @@ function App() {
             <div style={{ textAlign: 'right' }}>
               {currentStepIndex + 1} / {steps.length}
             </div>
-            {step}
+            {steps[currentStepIndex]}
             <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
               {!isFirstStep && (
                 <Button type="button" onClick={back}>
                   Back
                 </Button>
               )}
-              <Button type="submit">{isLastStep ? 'Finish' : 'Next'}</Button>
+              <Button type="submit" disabled={isLastStep}>
+                {isLastStep ? 'Finish' : 'Next'}
+              </Button>
             </div>
           </form>
         </Paper>
