@@ -106,10 +106,16 @@ function App() {
                 <Button type="button" onClick={back}>
                   Back
                 </Button>
+              )}  
+              {isLastStep ? (
+                <Button type="submit">
+                  Finish
+                </Button>
+              ) : (
+                <Button type="button" onClick={() => setCurrentStepIndex((prev) => prev + 1)}>
+                  Next
+                </Button>
               )}
-              <Button type="submit" disabled={isLastStep}>
-                {isLastStep ? 'Finish' : 'Next'}
-              </Button>
             </div>
           </form>
         </Paper>

@@ -53,6 +53,7 @@ const StartPage: React.FC<StartPageProps> = ({ onEdit, onNext, formDataList }) =
               <TableCell>street</TableCell>
               <TableCell>city</TableCell>
               <TableCell>state</TableCell>
+              <TableCell>email</TableCell>
               <TableCell>Action</TableCell> {/* Add a new column for Action */}
             </TableRow>
           </TableHead>
@@ -62,6 +63,7 @@ const StartPage: React.FC<StartPageProps> = ({ onEdit, onNext, formDataList }) =
                 <TableCell>{formData.street}</TableCell>
                 <TableCell>{formData.city}</TableCell>
                 <TableCell>{formData.state}</TableCell>
+                <TableCell>{formData.email}</TableCell>
                 <TableCell>
                   <Button variant="outlined" color="primary" onClick={() => handleEdit(index)}>
                     Edit
